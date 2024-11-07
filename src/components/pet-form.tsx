@@ -4,7 +4,7 @@ import usePetContext from '@/lib/hooks/usePetContext'
 import { Input } from './ui/input'
 import { Label } from './ui/label'
 import { Textarea } from './ui/textarea'
-import { addPet } from '@/actions/actions'
+import { addPet, updatePet } from '@/actions/actions'
 import PetFormBtn from './pet-form-btn'
 import { toast } from 'sonner'
 
@@ -22,12 +22,22 @@ export default function PetForm({
   return (
     <form
       action={async (formData) => {
-        const error = await addPet(formData)
-        if (error) {
-          toast.warning(error.message)
-          return
+        if (actionType === 'add') {
+          const error = await addPet(formData)
+          if (error) {
+            toast.warning(error.message)
+            return
+          }
+        } else if (actionType === 'edit') {
+          if (actionType === 'edit') {
+            const error = await updatePet(formData, selectedPet?.id)
+            if (error) {
+              toast.warning(error.message)
+              return
+            }
+          }
+          onFormSubmission()
         }
-        onFormSubmission()
       }}
     >
       <div className='space-y-3'>
