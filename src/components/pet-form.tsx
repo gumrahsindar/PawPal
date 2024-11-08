@@ -4,9 +4,7 @@ import usePetContext from '@/lib/hooks/usePetContext'
 import { Input } from './ui/input'
 import { Label } from './ui/label'
 import { Textarea } from './ui/textarea'
-import { addPet, updatePet } from '@/actions/actions'
 import PetFormBtn from './pet-form-btn'
-import { toast } from 'sonner'
 
 type PetFormProps = {
   actionType: 'edit' | 'add'
@@ -17,26 +15,25 @@ export default function PetForm({
   actionType,
   onFormSubmission,
 }: PetFormProps) {
-  const { selectedPet } = usePetContext()
+  const { selectedPet, handleAddPet, handleEditPet } = usePetContext()
 
   return (
     <form
       action={async (formData) => {
+        onFormSubmission()
+        const petData = {
+          name: formData.get('name') as string,
+          ownerName: formData.get('owner-name') as string,
+          imageUrl:
+            (formData.get('image-url') as string) ||
+            'https://bytegrad.com/course-assets/react-nextjs/pet-placeholder.png',
+          age: Number(formData.get('age')),
+          notes: formData.get('notes') as string,
+        }
         if (actionType === 'add') {
-          const error = await addPet(formData)
-          if (error) {
-            toast.warning(error.message)
-            return
-          }
+          await handleAddPet(petData)
         } else if (actionType === 'edit') {
-          if (actionType === 'edit') {
-            const error = await updatePet(formData, selectedPet?.id)
-            if (error) {
-              toast.warning(error.message)
-              return
-            }
-          }
-          onFormSubmission()
+          await handleEditPet(selectedPet!.id, petData)
         }
       }}
     >
