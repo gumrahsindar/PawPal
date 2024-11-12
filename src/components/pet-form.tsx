@@ -6,30 +6,13 @@ import { Label } from './ui/label'
 import { Textarea } from './ui/textarea'
 import PetFormBtn from './pet-form-btn'
 import { useForm } from 'react-hook-form'
-import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { petFormSchema, TPetForm } from '@/lib/validations'
 
 type PetFormProps = {
   actionType: 'edit' | 'add'
   onFormSubmission: () => void
 }
-
-type TPetForm = z.infer<typeof petFormSchema>
-
-const petFormSchema = z.object({
-  name: z.string().trim().min(1, { message: 'Name is required' }).max(100),
-  'owner-name': z
-    .string()
-    .trim()
-    .min(1, { message: 'Owner name is required' })
-    .max(100),
-  'image-url': z.union([
-    z.literal(''),
-    z.string().url({ message: 'Image url must be a valid URL' }),
-  ]),
-  age: z.coerce.number().int().positive().max(99999),
-  notes: z.string().trim().max(500).optional(),
-})
 
 export default function PetForm({
   actionType,
@@ -40,6 +23,7 @@ export default function PetForm({
   const {
     register,
     trigger,
+    getValues,
     formState: { errors },
   } = useForm<TPetForm>({
     resolver: zodResolver(petFormSchema),
@@ -47,19 +31,14 @@ export default function PetForm({
 
   return (
     <form
-      action={async (formData) => {
+      action={async () => {
         const result = await trigger()
         if (!result) return
         onFormSubmission()
-        const petData = {
-          name: formData.get('name') as string,
-          ownerName: formData.get('owner-name') as string,
-          imageUrl:
-            (formData.get('image-url') as string) ||
-            'https://bytegrad.com/course-assets/react-nextjs/pet-placeholder.png',
-          age: Number(formData.get('age')),
-          notes: formData.get('notes') as string,
-        }
+        const petData = getValues()
+        petData.imageUrl =
+          petData.imageUrl || 'https://placehold.co/600x400.png'
+
         if (actionType === 'add') {
           await handleAddPet(petData)
         } else if (actionType === 'edit') {
@@ -76,17 +55,17 @@ export default function PetForm({
 
         <div className='space-y-1'>
           <Label htmlFor='owner-name'>Owner Name</Label>
-          <Input id='owner-name' {...register('owner-name')} />
-          {errors['owner-name'] && (
-            <p className='text-red-500'>{errors['owner-name'].message}</p>
+          <Input id='ownerName' {...register('ownerName')} />
+          {errors.ownerName && (
+            <p className='text-red-500'>{errors.ownerName.message}</p>
           )}
         </div>
 
         <div className='space-y-1'>
-          <Label htmlFor='image-url'>Image Url</Label>
-          <Input id='image-url' {...register('image-url')} />
-          {errors['image-url'] && (
-            <p className='text-red-500'>{errors['image-url'].message}</p>
+          <Label htmlFor='imageUrl'>Image Url</Label>
+          <Input id='imageUrl' {...register('imageUrl')} />
+          {errors.imageUrl && (
+            <p className='text-red-500'>{errors.imageUrl.message}</p>
           )}
         </div>
 
