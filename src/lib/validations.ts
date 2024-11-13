@@ -2,6 +2,8 @@ import { z } from 'zod'
 
 export type TPetForm = z.infer<typeof petFormSchema>
 
+export const petIdSchema = z.string().cuid()
+
 export const petFormSchema = z
   .object({
     name: z.string().trim().min(1, { message: 'Name is required' }).max(100),
