@@ -2,6 +2,7 @@ import NextAuth, { NextAuthConfig } from 'next-auth'
 import prisma from './db'
 import bcrypt from 'bcryptjs'
 import Credentials from 'next-auth/providers/credentials'
+import { NextResponse } from 'next/server'
 
 const config = {
   pages: {
@@ -51,9 +52,17 @@ const config = {
         return true
       }
 
-      if (!isTryingToAccessApp) {
+      if (isLoggedIn && !isTryingToAccessApp) {
+        return NextResponse.redirect(
+          new URL('/app/dashboard', request.nextUrl.origin)
+        )
+      }
+
+      if (!isLoggedIn && !isTryingToAccessApp) {
         return true
       }
+
+      return false
     },
   },
 } satisfies NextAuthConfig
