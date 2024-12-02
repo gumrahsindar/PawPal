@@ -98,6 +98,13 @@ export async function updatePet(petId: unknown, newPetData: unknown) {
 export async function deletePet(id: unknown) {
   await sleep(1000)
 
+  // authentication check
+  const session = await auth()
+  if (!session?.user) {
+    redirect('/login')
+  }
+
+  // validate
   const validatedPetId = petIdSchema.safeParse(id)
 
   if (!validatedPetId.success) {
@@ -106,6 +113,23 @@ export async function deletePet(id: unknown) {
     }
   }
 
+  // authorization check (user owns pet)
+  const pet = await prisma.pet.findUnique({
+    where: {
+      id: validatedPetId.data,
+    },
+    select: {
+      userId: true,
+    },
+  })
+
+  if (!pet || pet.userId !== session.user.id) {
+    return {
+      message: 'You do not have permission to delete this pet.',
+    }
+  }
+
+  // db mutation
   try {
     await prisma.pet.delete({
       where: {
