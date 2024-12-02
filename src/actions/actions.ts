@@ -71,6 +71,13 @@ export async function addPet(pet: unknown) {
 export async function updatePet(petId: unknown, newPetData: unknown) {
   await sleep(1000)
 
+  // authentication check
+  const session = await auth()
+  if (!session?.user) {
+    redirect('/login')
+  }
+
+  // validate
   const validatedPetId = petIdSchema.safeParse(petId)
 
   const validatedPet = petFormSchema.safeParse(newPetData)
@@ -80,6 +87,23 @@ export async function updatePet(petId: unknown, newPetData: unknown) {
     }
   }
 
+  // authorization check (user owns pet)
+  const pet = await prisma.pet.findUnique({
+    where: {
+      id: validatedPetId.data,
+    },
+    select: {
+      userId: true,
+    },
+  })
+
+  if (!pet || pet.userId !== session.user.id) {
+    return {
+      message: 'You do not have permission to update this pet.',
+    }
+  }
+
+  // db mutation
   try {
     await prisma.pet.update({
       where: {
