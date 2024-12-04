@@ -23,3 +23,10 @@ export const petFormSchema = z
     ...data,
     imageUrl: data.imageUrl || 'https://placehold.co/600x400.png',
   }))
+
+export const authSchema = z.object({
+  email: z.string().email().max(100),
+  password: z.string().max(100),
+})
+
+export type TAuth = z.infer<typeof authSchema>
