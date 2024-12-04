@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs'
 import Credentials from 'next-auth/providers/credentials'
 import { NextResponse } from 'next/server'
 import { getUserByEmail } from './server-utils'
-import { authSchema, TAuth } from './validations'
+import { authSchema } from './validations'
 
 const config = {
   pages: {
@@ -12,10 +12,7 @@ const config = {
   providers: [
     Credentials({
       async authorize(credentials) {
-        // runs on login
-
         // validation
-
         const validatedFormData = authSchema.safeParse(credentials)
         if (!validatedFormData.success) {
           return null
