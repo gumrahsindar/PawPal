@@ -11,7 +11,7 @@ import { checkAuth, getPetById } from '@/lib/server-utils'
 import { Prisma } from '@prisma/client'
 
 // -- user actions --
-export async function signUp(formData: unknown) {
+export async function signUp(prevState: unknown, formData: unknown) {
   await sleep(1000)
 
   // check if formData is a FormData object
