@@ -11,8 +11,12 @@ type AuthFormProps = {
 }
 export default function AuthForm({ type }: AuthFormProps) {
   const [signUpError, dispatchSignUp] = useFormState(signUp, undefined)
+  const [logInError, dispatchLogIn] = useFormState(logIn, undefined)
   return (
-    <form action={dispatchSignUp} className='mt-6 w-[350px]'>
+    <form
+      action={type === 'logIn' ? dispatchLogIn : dispatchSignUp}
+      className='mt-6 w-[350px]'
+    >
       <div className='space-y-1'>
         <Label htmlFor='email'>Email</Label>
         <Input id='email' name='email' type='email' required maxLength={100} />
@@ -33,6 +37,10 @@ export default function AuthForm({ type }: AuthFormProps) {
 
       {signUpError && (
         <div className='text-red-500 mt-2'>{signUpError.message}</div>
+      )}
+
+      {logInError && (
+        <div className='text-red-500 mt-2'>{logInError.message}</div>
       )}
     </form>
   )
