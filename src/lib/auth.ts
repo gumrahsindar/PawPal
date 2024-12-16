@@ -56,9 +56,14 @@ const config = {
       }
 
       if (isLoggedIn && !isTryingToAccessApp) {
-        return NextResponse.redirect(
-          new URL('/app/dashboard', request.nextUrl.origin)
-        )
+        if (
+          request.nextUrl.pathname.includes('/login') ||
+          request.nextUrl.pathname.includes('/signup')
+        ) {
+          return NextResponse.redirect(new URL('/payment', request.nextUrl))
+        }
+
+        return true
       }
 
       if (!isLoggedIn && !isTryingToAccessApp) {
