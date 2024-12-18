@@ -4,7 +4,7 @@ export default function Branding() {
   return (
     <section>
       <H1>
-        Pet<span className='font-semibold'>Soft</span>
+        Paw<span className='font-semibold'>Pal</span>
       </H1>
       <p className='text-lg opacity-80'>Manage your pet deycare with ease</p>
     </section>
