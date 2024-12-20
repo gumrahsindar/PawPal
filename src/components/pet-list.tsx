@@ -13,8 +13,6 @@ export default function PetList() {
     pet.name.toLowerCase().includes(searchQuery)
   )
 
-  console.log('filteredPets', filteredPets)
-
   return (
     <ul className='bg-white border-b border-light'>
       {filteredPets.map((pet) => (

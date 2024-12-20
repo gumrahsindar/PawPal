@@ -26,8 +26,6 @@ export default function SearchContextProvider({
     setSearchQuery(newValue)
   }
 
-  console.log('searchQuery', searchQuery)
-
   return (
     <SearchContext.Provider
       value={{
