@@ -59,6 +59,15 @@ const config = {
         return true
       }
 
+      if (
+        isLoggedIn &&
+        (request.nextUrl.pathname.includes('/login') ||
+          request.nextUrl.pathname.includes('/signup')) &&
+        auth.user.hasAccess
+      ) {
+        return NextResponse.redirect(new URL('/app/dashboard', request.nextUrl))
+      }
+
       if (isLoggedIn && !isTryingToAccessApp) {
         if (
           (request.nextUrl.pathname.includes('/login') ||
