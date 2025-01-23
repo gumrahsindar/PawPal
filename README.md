@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# PawPal - Daycare App For Your Pet 🐾
 
-## Getting Started
+## 🚀 Features
 
-First, run the development server:
+- **Book Daycare Services**: Effortlessly schedule daycare services for your furry friends.
+- **Manage Subscriptions**: Seamlessly handle subscription plans via Stripe integration.
+- **Secure Payments**: Make payments easily and securely through Stripe.
+- **Responsive Design**: Experience an optimized layout across all screen sizes.
+- **Interactive UI**: Enjoy hover effects and visually appealing interactive elements.
+- **User-Friendly Forms**: Validated forms ensure a smooth user experience with Zod and TypeScript.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🛠️ Technologies Used
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Next.js**: Framework for fast and scalable web apps with SSR and static site generation.
+- **Prisma**: Intuitive ORM for managing database interactions.
+- **Stripe**: Simplified subscription and payment handling.
+- **Neon Postgres**: High-performance cloud-based PostgreSQL database.
+- **shadcn/ui**: Pre-built accessible components for a beautiful UI.
+- **Tailwind CSS**: Utility-first CSS framework for rapid styling.
+- **TypeScript**: Type-safe development for better maintainability.
+- **Zod**: Schema validation to ensure robust and secure inputs.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🌐 Live Demo
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+[Live Demo](https://paw-pal-sepia.vercel.app/)
 
-## Learn More
+## 🌟 Lighthouse Score
 
-To learn more about Next.js, take a look at the following resources:
+<div align="center">  
+  <img src="./lighthouse-pawpal.png" alt="Lighthouse Score" width="500">  
+</div>
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🌄 Preview
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+<div align="center">  
+  <img src="./preview-pawpal.png" alt="Preview" width="800">  
+</div>
 
-## Deploy on Vercel
+## Author
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- LinkedIn - [Gümrah Sindar](https://www.linkedin.com/in/gumrahsindar/)
