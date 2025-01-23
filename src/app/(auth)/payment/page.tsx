@@ -45,6 +45,13 @@ export default function PaymentPage({
         </Button>
       )}
 
+      {!searchParams.success && (
+        <p className='text-sm text-red-500'>
+          For test payment, use card number 4242 4242 4242 4242, any future
+          date, and any CVC.
+        </p>
+      )}
+
       {searchParams.success && (
         <p className='text-sm text-green-700'>
           Payment successful! You now have lifetime access to PawPal.{' '}
