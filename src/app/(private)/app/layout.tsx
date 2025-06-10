@@ -1,10 +1,10 @@
-import AppFooter from '@/components/app-footer'
-import AppHeader from '@/components/app-header'
-import BackgroundPattern from '@/components/background-pattern'
-import { Toaster } from '@/components/ui/sonner'
-import PetContextProvider from '@/contexts/pet-context-provider'
-import SearchContextProvider from '@/contexts/search-context-provider'
-import { checkAuth, getPetsByUserId } from '@/lib/server-utils'
+import AppFooter from "@/components/app-footer"
+import AppHeader from "@/components/app-header"
+import BackgroundPattern from "@/components/background-pattern"
+import { Toaster } from "@/components/ui/sonner"
+import PetContextProvider from "@/contexts/pet-context-provider"
+import SearchContextProvider from "@/contexts/search-context-provider"
+import { checkAuth, getPetsByUserId } from "@/lib/server-utils"
 
 export default async function Layout({
   children,
@@ -16,7 +16,7 @@ export default async function Layout({
   return (
     <>
       <BackgroundPattern />
-      <div className='min-h-screen flex flex-col max-w-[1050px] mx-auto px-4'>
+      <div className="min-h-screen flex flex-col max-w-[1050px] mx-auto px-4">
         <AppHeader />
         <SearchContextProvider>
           <PetContextProvider data={pets}>{children}</PetContextProvider>

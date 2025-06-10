@@ -1,13 +1,13 @@
-import NextAuth, { NextAuthConfig } from 'next-auth'
-import bcrypt from 'bcryptjs'
-import Credentials from 'next-auth/providers/credentials'
-import { NextResponse } from 'next/server'
-import { getUserByEmail } from './server-utils'
-import { authSchema } from './validations'
+import NextAuth, { NextAuthConfig } from "next-auth"
+import bcrypt from "bcryptjs"
+import Credentials from "next-auth/providers/credentials"
+import { NextResponse } from "next/server"
+import { getUserByEmail } from "./server-utils"
+import { authSchema } from "./validations"
 
 const config = {
   pages: {
-    signIn: '/login',
+    signIn: "/login",
   },
   providers: [
     Credentials({
@@ -23,7 +23,7 @@ const config = {
 
         const user = await getUserByEmail(email)
         if (!user) {
-          console.log('User not found')
+          console.log("User not found")
           return null
         }
 
@@ -33,7 +33,7 @@ const config = {
         )
 
         if (!passwordsMatch) {
-          console.log('Invalid credentials')
+          console.log("Invalid credentials")
           return null
         }
 
@@ -42,53 +42,47 @@ const config = {
     }),
   ],
   callbacks: {
-    authorized: ({ auth, request }) => {
-      // runs on every request with middleware
-      const isLoggedIn = Boolean(auth?.user)
-      const isTryingToAccessApp = request.nextUrl.pathname.includes('/app')
+    authorized: async ({ auth, request }) => {
+      // headers kullanımı varsa await et
+      const isLoggedIn = !!auth?.user
+      const isTryingToAccessApp = request.nextUrl.pathname.includes("/app")
+      const isAuthPage =
+        request.nextUrl.pathname.includes("/login") ||
+        request.nextUrl.pathname.includes("/signup")
+      const isRootPath = request.nextUrl.pathname === "/"
 
+      // Root path için özel kontrol
+      if (isRootPath && isLoggedIn && auth.user.hasAccess) {
+        return NextResponse.redirect(new URL("/app/dashboard", request.nextUrl))
+      }
+
+      if (isRootPath && isLoggedIn && !auth.user.hasAccess) {
+        return NextResponse.redirect(new URL("/payment", request.nextUrl))
+      }
+
+      // App sayfalarına erişim kontrolü
       if (!isLoggedIn && isTryingToAccessApp) {
-        return false
+        return NextResponse.redirect(new URL("/login", request.nextUrl))
       }
 
-      if (isLoggedIn && isTryingToAccessApp && !auth?.user.hasAccess) {
-        return NextResponse.redirect(new URL('/payment', request.nextUrl))
+      if (isLoggedIn && isTryingToAccessApp && !auth.user.hasAccess) {
+        return NextResponse.redirect(new URL("/payment", request.nextUrl))
       }
 
-      if (isLoggedIn && isTryingToAccessApp && auth?.user.hasAccess) {
+      if (isLoggedIn && isTryingToAccessApp && auth.user.hasAccess) {
         return true
       }
 
-      if (isLoggedIn && request.nextUrl.pathname.includes('/')) {
-        return NextResponse.redirect(new URL('/app/dashboard', request.nextUrl))
+      // Auth sayfalarına erişim kontrolü
+      if (isLoggedIn && isAuthPage && auth.user.hasAccess) {
+        return NextResponse.redirect(new URL("/app/dashboard", request.nextUrl))
       }
 
-      if (
-        isLoggedIn &&
-        (request.nextUrl.pathname.includes('/login') ||
-          request.nextUrl.pathname.includes('/signup')) &&
-        auth?.user.hasAccess
-      ) {
-        return NextResponse.redirect(new URL('/app/dashboard', request.nextUrl))
+      if (isLoggedIn && isAuthPage && !auth.user.hasAccess) {
+        return NextResponse.redirect(new URL("/payment", request.nextUrl))
       }
 
-      if (isLoggedIn && !isTryingToAccessApp) {
-        if (
-          (request.nextUrl.pathname.includes('/login') ||
-            request.nextUrl.pathname.includes('/signup')) &&
-          !auth?.user.hasAccess
-        ) {
-          return NextResponse.redirect(new URL('/payment', request.nextUrl))
-        }
-
-        return true
-      }
-
-      if (!isLoggedIn && !isTryingToAccessApp) {
-        return true
-      }
-
-      return false
+      return true
     },
 
     jwt: async ({ token, user, trigger }) => {
@@ -97,7 +91,7 @@ const config = {
         token.email = user.email
         token.hasAccess = user.hasAccess
       }
-      if (trigger === 'update') {
+      if (trigger === "update") {
         const userFromDb = await getUserByEmail(token.email!)
         if (userFromDb) {
           token.hasAccess = userFromDb.hasAccess
