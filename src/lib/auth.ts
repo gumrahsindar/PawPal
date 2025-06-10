@@ -42,8 +42,7 @@ const config = {
     }),
   ],
   callbacks: {
-    authorized: async ({ auth, request }) => {
-      // headers kullanımı varsa await et
+    authorized: ({ auth, request }) => {
       const isLoggedIn = !!auth?.user
       const isTryingToAccessApp = request.nextUrl.pathname.includes("/app")
       const isAuthPage =
