@@ -1,24 +1,26 @@
-'use server'
+"use server"
 
-import { signIn, signOut } from '@/lib/auth'
-import prisma from '@/lib/db'
-import { sleep } from '@/lib/utils'
-import { authSchema, petFormSchema, petIdSchema } from '@/lib/validations'
-import { revalidatePath } from 'next/cache'
-import bcrypt from 'bcryptjs'
-import { redirect } from 'next/navigation'
-import { checkAuth, getPetById } from '@/lib/server-utils'
-import { Prisma } from '@prisma/client'
-import { AuthError } from 'next-auth'
+import { signIn, signOut } from "@/lib/auth"
+import prisma from "@/lib/db"
+import { authSchema, petFormSchema, petIdSchema } from "@/lib/validations"
+import { revalidatePath } from "next/cache"
+import bcrypt from "bcryptjs"
+import { redirect } from "next/navigation"
+import { checkAuth, getPetById } from "@/lib/server-utils"
+import { Prisma } from "@prisma/client"
+import { AuthError } from "next-auth"
 
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
 
 // -- user actions --
-export async function signUp(prevState: unknown, formData: unknown) {
+export async function signUp(
+  prevState: unknown,
+  formData: unknown
+): Promise<{ message: string } | undefined> {
   // check if formData is a FormData object
   if (!(formData instanceof FormData)) {
     return {
-      message: 'Invalid form data.',
+      message: "Invalid form data.",
     }
   }
 
@@ -30,7 +32,7 @@ export async function signUp(prevState: unknown, formData: unknown) {
 
   if (!validatedFormData.success) {
     return {
-      message: 'Invalid form data.',
+      message: "Invalid form data.",
     }
   }
 
@@ -46,48 +48,51 @@ export async function signUp(prevState: unknown, formData: unknown) {
     })
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === 'P2002') {
+      if (error.code === "P2002") {
         return {
-          message: 'Email already exists.',
+          message: "Email already exists.",
         }
       }
     }
   }
 
-  await signIn('credentials', formData)
+  await signIn("credentials", formData)
 }
 
-export async function logIn(prevState: unknown, formData: unknown) {
+export async function logIn(
+  prevState: unknown,
+  formData: unknown
+): Promise<{ message: string } | undefined> {
   if (!(formData instanceof FormData)) {
     return {
-      message: 'Invalid form data.',
+      message: "Invalid form data.",
     }
   }
 
   try {
-    await signIn('credentials', formData)
+    await signIn("credentials", formData)
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
-        case 'CredentialsSignin': {
+        case "CredentialsSignin": {
           return {
-            message: 'Invalid email or password.',
+            message: "Invalid email or password.",
           }
         }
         default: {
           return {
-            message: 'Could not log in.',
+            message: "Could not log in.",
           }
         }
       }
     }
   }
 
-  redirect('/app/dashboard')
+  redirect("/app/dashboard")
 }
 
 export async function logOut() {
-  await signOut({ redirectTo: '/' })
+  await signOut({ redirectTo: "/" })
 }
 
 // -- pet actions --
@@ -97,7 +102,7 @@ export async function addPet(pet: unknown) {
   const validatedPet = petFormSchema.safeParse(pet)
   if (!validatedPet.success) {
     return {
-      message: 'Invalid pet data.',
+      message: "Invalid pet data.",
     }
   }
 
@@ -112,10 +117,10 @@ export async function addPet(pet: unknown) {
     })
   } catch (error) {
     return {
-      message: 'Could not add pet.',
+      message: "Could not add pet.",
     }
   }
-  revalidatePath('/app', 'layout')
+  revalidatePath("/app", "layout")
 }
 
 export async function updatePet(petId: unknown, newPetData: unknown) {
@@ -128,7 +133,7 @@ export async function updatePet(petId: unknown, newPetData: unknown) {
   const validatedPet = petFormSchema.safeParse(newPetData)
   if (!validatedPetId.success || !validatedPet.success) {
     return {
-      message: 'Invalid pet data.',
+      message: "Invalid pet data.",
     }
   }
 
@@ -137,7 +142,7 @@ export async function updatePet(petId: unknown, newPetData: unknown) {
 
   if (!pet || pet.userId !== session.user.id) {
     return {
-      message: 'You do not have permission to update this pet.',
+      message: "You do not have permission to update this pet.",
     }
   }
 
@@ -151,10 +156,10 @@ export async function updatePet(petId: unknown, newPetData: unknown) {
     })
   } catch (error) {
     return {
-      message: 'Could not update pet.',
+      message: "Could not update pet.",
     }
   }
-  revalidatePath('/app', 'layout')
+  revalidatePath("/app", "layout")
 }
 
 export async function deletePet(id: unknown) {
@@ -166,7 +171,7 @@ export async function deletePet(id: unknown) {
 
   if (!validatedPetId.success) {
     return {
-      message: 'Invalid pet id.',
+      message: "Invalid pet id.",
     }
   }
 
@@ -175,7 +180,7 @@ export async function deletePet(id: unknown) {
 
   if (!pet || pet.userId !== session.user.id) {
     return {
-      message: 'You do not have permission to delete this pet.',
+      message: "You do not have permission to delete this pet.",
     }
   }
 
@@ -188,10 +193,10 @@ export async function deletePet(id: unknown) {
     })
   } catch (error) {
     return {
-      message: 'Could not delete pet.',
+      message: "Could not delete pet.",
     }
   }
-  revalidatePath('/app', 'layout')
+  revalidatePath("/app", "layout")
 }
 
 // payment actions
@@ -204,11 +209,11 @@ export async function createCheckoutSession() {
     customer_email: session.user.email,
     line_items: [
       {
-        price: 'price_1QWelWGkqcYPaKxXpHD8YXPw',
+        price: "price_1QWelWGkqcYPaKxXpHD8YXPw",
         quantity: 1,
       },
     ],
-    mode: 'payment',
+    mode: "payment",
     success_url: `${process.env.BASE_URL}/payment?success=true`,
     cancel_url: `${process.env.BASE_URL}/payment?canceled=true`,
   })
